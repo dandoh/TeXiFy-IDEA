@@ -26,6 +26,7 @@ public interface LatexTypes {
   IElementType OPEN_GROUP = new LatexElementType("OPEN_GROUP");
   IElementType OPTIONAL_PARAM = new LatexElementType("OPTIONAL_PARAM");
   IElementType PARAMETER = new LatexElementType("PARAMETER");
+  IElementType RAW_TEXT = new LatexElementType("RAW_TEXT");
   IElementType REQUIRED_PARAM = new LatexElementType("REQUIRED_PARAM");
 
   IElementType BEGIN_TOKEN = new LatexTokenType("\\begin");
@@ -45,6 +46,7 @@ public interface LatexTypes {
   IElementType OPEN_BRACE = new LatexTokenType("OPEN_BRACE");
   IElementType OPEN_BRACKET = new LatexTokenType("OPEN_BRACKET");
   IElementType OPEN_PAREN = new LatexTokenType("OPEN_PAREN");
+  IElementType RAW_TEXT_TOKEN = new LatexTokenType("RAW_TEXT");
   IElementType STAR = new LatexTokenType("*");
 
   class Factory {
@@ -100,6 +102,9 @@ public interface LatexTypes {
       }
       else if (type == PARAMETER) {
         return new LatexParameterImpl(node);
+      }
+      else if (type == RAW_TEXT) {
+        return new LatexRawTextImpl(node);
       }
       else if (type == REQUIRED_PARAM) {
         return new LatexRequiredParamImpl(node);

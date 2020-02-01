@@ -1,15 +1,65 @@
 // This is a generated file. Not intended for manual editing.
 package nl.hannahsten.texifyidea.parser;
 
+import com.intellij.lang.ASTNode;
+import com.intellij.lang.LightPsiParser;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilder.Marker;
-import static nl.hannahsten.texifyidea.psi.LatexTypes.*;
-import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
-import com.intellij.psi.tree.IElementType;
-import com.intellij.lang.ASTNode;
-import com.intellij.psi.tree.TokenSet;
 import com.intellij.lang.PsiParser;
-import com.intellij.lang.LightPsiParser;
+import com.intellij.psi.tree.IElementType;
+
+import static nl.hannahsten.texifyidea.parser.LatexParserUtil.Parser;
+import static nl.hannahsten.texifyidea.parser.LatexParserUtil.TRUE_CONDITION;
+import static nl.hannahsten.texifyidea.parser.LatexParserUtil._COLLAPSE_;
+import static nl.hannahsten.texifyidea.parser.LatexParserUtil._NONE_;
+import static nl.hannahsten.texifyidea.parser.LatexParserUtil.adapt_builder_;
+import static nl.hannahsten.texifyidea.parser.LatexParserUtil.consumeToken;
+import static nl.hannahsten.texifyidea.parser.LatexParserUtil.current_position_;
+import static nl.hannahsten.texifyidea.parser.LatexParserUtil.empty_element_parsed_guard_;
+import static nl.hannahsten.texifyidea.parser.LatexParserUtil.enter_section_;
+import static nl.hannahsten.texifyidea.parser.LatexParserUtil.exit_section_;
+import static nl.hannahsten.texifyidea.parser.LatexParserUtil.injection_env_content;
+import static nl.hannahsten.texifyidea.parser.LatexParserUtil.nextTokenIs;
+import static nl.hannahsten.texifyidea.parser.LatexParserUtil.recursion_guard_;
+import static nl.hannahsten.texifyidea.parser.LatexParserUtil.report_error_;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.BEGIN_COMMAND;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.BEGIN_TOKEN;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.CLOSE_BRACE;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.CLOSE_BRACKET;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.CLOSE_PAREN;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.COMMANDS;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.COMMAND_TOKEN;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.COMMENT;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.COMMENT_TOKEN;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.CONTENT;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.DISPLAY_MATH;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.DISPLAY_MATH_END;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.DISPLAY_MATH_START;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.END_COMMAND;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.END_TOKEN;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.ENVIRONMENT;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.ENVIRONMENT_CONTENT;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.GROUP;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.INLINE_MATH;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.INLINE_MATH_END;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.INLINE_MATH_START;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.MATH_CONTENT;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.MATH_ENVIRONMENT;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.M_CLOSE_BRACKET;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.M_OPEN_BRACKET;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.NORMAL_TEXT;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.NORMAL_TEXT_WORD;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.NO_MATH_CONTENT;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.OPEN_BRACE;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.OPEN_BRACKET;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.OPEN_GROUP;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.OPEN_PAREN;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.OPTIONAL_PARAM;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.PARAMETER;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.RAW_TEXT;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.RAW_TEXT_TOKEN;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.REQUIRED_PARAM;
+import static nl.hannahsten.texifyidea.psi.LatexTypes.STAR;
 
 @SuppressWarnings({"SimplifiableIfStatement", "UnusedAssignment"})
 public class LatexParser implements PsiParser, LightPsiParser {
@@ -202,18 +252,29 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // content+
+  // <<injection_env_content raw_text>> | content+
   public static boolean environment_content(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "environment_content")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, ENVIRONMENT_CONTENT, "<environment content>");
+    r = injection_env_content(b, l + 1, raw_text_parser_);
+    if (!r) r = environment_content_1(b, l + 1);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  // content+
+  private static boolean environment_content_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "environment_content_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
     r = content(b, l + 1);
     while (r) {
       int c = current_position_(b);
       if (!content(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "environment_content", c)) break;
+      if (!empty_element_parsed_guard_(b, "environment_content_1", c)) break;
     }
-    exit_section_(b, l, m, r, false, null);
+    exit_section_(b, m, null, r);
     return r;
   }
 
@@ -405,6 +466,20 @@ public class LatexParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // RAW_TEXT_TOKEN*
+  public static boolean raw_text(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "raw_text")) return false;
+    Marker m = enter_section_(b, l, _NONE_, RAW_TEXT, "<raw text>");
+    while (true) {
+      int c = current_position_(b);
+      if (!consumeToken(b, RAW_TEXT_TOKEN)) break;
+      if (!empty_element_parsed_guard_(b, "raw_text", c)) break;
+    }
+    exit_section_(b, l, m, true, false, null);
+    return true;
+  }
+
+  /* ********************************************************** */
   // group
   public static boolean required_param(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "required_param")) return false;
@@ -416,4 +491,9 @@ public class LatexParser implements PsiParser, LightPsiParser {
     return r;
   }
 
+  static final Parser raw_text_parser_ = new Parser() {
+    public boolean parse(PsiBuilder b, int l) {
+      return raw_text(b, l + 1);
+    }
+  };
 }
