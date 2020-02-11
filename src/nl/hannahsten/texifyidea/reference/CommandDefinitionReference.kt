@@ -32,7 +32,9 @@ class CommandDefinitionReference(element: LatexCommands) : PsiReferenceBase<Late
                     .filter { it.requiredParameters.firstOrNull() == element.name }
                     .mapNotNull { newcommand ->
                         // Find the command being defined, e.g. \hi in case of \newcommand{\hi}{}
-                        // We should resolve to \hi, not to \newcommand, because otherwise the find usages will try to find references to the \hi definition and won't find anything because the references point to the \newcommand
+                        // We should resolve to \hi, not to \newcommand, because otherwise the find usages
+                        // will try to find references to the \hi definition and won't find anything because
+                        // the references point to the \newcommand.
                         val definedCommand = newcommand.childrenOfType<LatexCommands>().firstOrNull()
 
                         if (definedCommand == null) {
